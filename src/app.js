@@ -10,7 +10,7 @@ const manager = new ProductManager('./products.json')
 //CREACION DE LOS ENDPOINT
 app.get("/products", async (req, res) => {                   // Invoco la constante y accedo a sus métodos, que recibirán 2 parámetros: url y un callback (req,res)
   
-  const {limit} = req.params;
+  const {limit} = req.query;
 
   const products = await manager.getProducts();
   
@@ -19,13 +19,15 @@ app.get("/products", async (req, res) => {                   // Invoco la consta
   : products)
 });
 
-app.get("/products/:pid", async (req, res) => {                   // Invoco la constante y accedo a sus métodos, que recibirán 2 parámetros: url y un callback (req,res)
+app.get("/product/:pid", async (req, res) => {                   // Invoco la constante y accedo a sus métodos, que recibirán 2 parámetros: url y un callback (req,res)
   
-  const {id} = req.params;
-
-  const products = await manager.getProducts();
-  
-  res.send(products.find(product => product.id == id));
+  try{
+    const {pid} = req.params;
+    const product =  await manager.getProducts(pid);
+    res.send(product.find(product => product.id == pid))
+  } catch(e){
+    res.status(404).send({error: "Producto no existe" });
+  }
 });
 
 
